@@ -1,5 +1,5 @@
 # GPS radio occultation retrieval (CDAAC standard steps) for COSMIC-1, COSMIC-2 and CDAAC ionosphere files.
-# Run with: python ro.py
+# Run with: python radio_occultation.py
 # Data folders next to this file: data, data_cosmic2, data_iono, data_geoid (EGM96)
 
 
@@ -833,10 +833,9 @@ def median(x):
 
 
 def show(png):
-    # saves the figure in the results folder, in a notebook it is also shown
-    (FOLDER / "results").mkdir(exist_ok=True)
+    # saves the figure next to this file, in a notebook it is also shown
     plt.tight_layout()
-    plt.savefig(FOLDER / "results" / png, dpi=120)
+    plt.savefig(FOLDER / png, dpi=120)
     if "ipykernel" in sys.modules:
         plt.show()
     else:

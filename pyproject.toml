@@ -12,10 +12,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "ipykernel",
-    "nbformat",
     "pyright",
-    "pytest >= 8.3.4",
     "ruff >= 0.8.1",
 ]
 
@@ -51,7 +48,3 @@ ignore = [
     "PLR0917",
     "CPY001",
 ]
-
-[tool.pytest.ini_options]
-pythonpath = ["."]
-addopts = "--import-mode=importlib"

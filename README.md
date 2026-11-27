@@ -4,7 +4,7 @@ GNSS test code for CTS-SAT-1 and CTS-SAT-2.
 
 ## Radio occultation
 
-`radio_occultation.py` and `radio_occultation.ipynb` hold the same code. The notebook also shows the plots. Both turn GPS carrier phase and orbit data from a satellite in low Earth orbit into profiles of the atmosphere, and compare the result with the official CDAAC (UCAR) profiles.
+`radio_occultation.py` turns GPS carrier phase and orbit data from a satellite in low Earth orbit into profiles of the atmosphere, and compares the result with the official CDAAC (UCAR) profiles.
 
 **Why:** As a GPS satellite sets behind the Earth, its signal bends in the atmosphere. The bending depends on air density, so it gives accurate vertical profiles anywhere on Earth. The same phase data also gives the ionosphere electron density from the L1 and L2 signals.
 
@@ -27,7 +27,7 @@ GNSS test code for CTS-SAT-1 and CTS-SAT-2.
 | `data_iono` | COSMIC-1 `ionPhs` and `ionPrf`, 2010/001 |
 | `data_geoid` | EGM96 geoid grid |
 
-**Results against CDAAC** (plots in `results/`):
+**Results against CDAAC**:
 
 - Refractivity within about 0.1 % from 5 to 30 km, dry temperature within a few tenths of a K up to 20 km.
 - Noisier below 5 km (worst profile about -5 %) and above 30 km (temperature up to 5-7 K off).
@@ -39,20 +39,12 @@ GNSS test code for CTS-SAT-1 and CTS-SAT-2.
 
 ## Setup and checks
 
-Needs [uv](https://docs.astral.sh/uv/) and optionally [just](https://github.com/casey/just).
+Needs [uv](https://docs.astral.sh/uv/).
 
 ```powershell
-uv sync                         # install everything from uv.lock
-uv run python radio_occultation.py   # run the retrieval, takes about 4 minutes, saves plots in results/
-```
-
-Checks that CI runs and that must pass before pushing:
-
-```powershell
-uv run ruff format --check .
+uv sync                              # install from uv.lock
+uv run python radio_occultation.py   # takes about 4 minutes, saves the plots next to the script
+uv run ruff format --check .         # checks, run these before pushing
 uv run ruff check .
 uv run pyright
-uv run pytest
 ```
-
-`just check` runs all four, `just fmt` fixes formatting and lint. A git pre-push hook that runs the checks can be installed with `just hook`.
