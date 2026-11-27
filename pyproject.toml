@@ -1,0 +1,50 @@
+[project]
+name = "cts-sat-2-gnss-testing"
+version = "0.1.0"
+description = "GNSS testing code for CTS-SAT-2: radio occultation retrieval"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "scipy",
+]
+
+[dependency-groups]
+dev = [
+    "pyright",
+    "ruff >= 0.8.1",
+]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+# The code has no type hints, so numpy/scipy stubs give false alarms for these.
+reportArgumentType = false
+reportCallIssue = false
+reportOperatorIssue = false
+reportOptionalMemberAccess = false
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "S101",    # Allow asserts.
+    "D",       # Docstring rules are too strict.
+    "COM812",  # Recommended disable by ruff formatter.
+    "ISC001",  # Recommended disable by ruff formatter.
+    "ANN",     # No type hints, the code is kept basic.
+    "T201",    # Allow print.
+    "E501",    # Long lines are fine.
+    "N803",    # Physics names like L1, F1.
+    "N806",
+    "PLR0913", # Many arguments.
+    "PLR0915", # Long functions.
+    "PLR0912",
+    "PLR0911",
+    "C901",
+    "ERA001",  # Commented explanations are fine.
+    "FBT",
+    "INP001",
+    "PLR2004", # Magic numbers are normal in physics code.
+    "PLR0917",
+    "CPY001",
+]
