@@ -20,6 +20,4 @@ The L1 minus L2 phase also gives the ionosphere electron density (slant TEC, the
 
 **Accuracy:** For the 4 COSMIC-1 and 8 COSMIC-2 test profiles, the median difference from CDAAC is within about 0.1% for refractivity (5-30 km) and within a few tenths of a K for temperature (5-20 km). Below 5 km the worst profile is about 5% off, and above 30 km temperature can be 5-7 K off. The electron density peak height is within 5 km for all 8 ionosphere profiles. This is a small sample from a single day per mission.
 
-**Limitations:** This is a simplified version of the CDAAC method. It has only been tested on COSMIC data, there is no CTS-SAT data yet, and a reader for the CTS-SAT receiver logs still has to be written. The ionosphere part needs L1 and L2, so it works for CTS-SAT-2 but not for the L1-only CTS-SAT-1. Heights are above the EGM96 geoid (sea level).
-
 Method: "Standard RO Inversions in the Neutral Atmosphere" (Sokolovskiy, UCAR/CDAAC).
