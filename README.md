@@ -1,50 +1,25 @@
 # GNSS-testing
 
-GNSS test code for CTS-SAT-1 and CTS-SAT-2.
-
 ## Radio occultation
 
-`radio_occultation.py` turns GPS carrier phase and orbit data from a satellite in low Earth orbit into profiles of the atmosphere, and compares the result with the official CDAAC (UCAR) profiles.
+**What it does:** `radio_occultation.py` turns GPS signals received by a satellite in low Earth orbit into vertical profiles of atmospheric refractivity, pressure and temperature, and into ionosphere electron density. It uses COSMIC-1 and COSMIC-2 data (folders `data`, `data_cosmic2`, `data_iono` and `data_geoid`) and checks its results against the official CDAAC profiles.
 
-**Why:** As a GPS satellite sets behind the Earth, its signal bends in the atmosphere. The bending depends on air density, so it gives accurate vertical profiles anywhere on Earth. The same phase data also gives the ionosphere electron density from the L1 and L2 signals.
+**Why:** As a GPS satellite sets behind the Earth, its signal passes through deeper and deeper layers of the atmosphere and bends. The amount of bending depends on air density, so measuring it tells us about the atmosphere. This gives accurate, high-resolution profiles anywhere on Earth, without balloons or ground stations.
 
-**Steps** (from "Standard RO Inversions in the Neutral Atmosphere 2013-2020", Sokolovskiy, CDAAC):
+**How:**
 
-1. Read the phase and orbits, remove open loop navigation bits (COSMIC-1), replace untracked L2.
-2. Filter the phase and get the Doppler shift caused by the atmosphere.
-3. Bending angle from the ray whose Doppler matches (geometric optics), and from wave optics below the troposphere top.
-4. Remove the ionosphere with L1 and L2, extrapolate it above 80 km (Zeng 2016).
-5. Abel inversion to refractivity, EGM96 geoid for heights.
-6. Hydrostatic pressure and dry temperature, quality control, tropopause height.
-7. Electron density from L1 minus L2 (slant TEC, Abel inversion).
+1. Read the signal phase and satellite orbits.
+2. Filter the phase and take its rate of change to get the Doppler shift caused by the atmosphere.
+3. Find the ray path that matches that Doppler shift, which gives the bending angle at each height. Low in the troposphere, wave optics is used instead.
+4. Combine the L1 and L2 frequencies to remove the effect of the ionosphere.
+5. Above 35 km, gradually replace the noisy data with a fitted US Standard Atmosphere model.
+6. Apply an Abel inversion to convert bending angle into refractivity.
+7. Get pressure from hydrostatic balance, then dry temperature from refractivity and pressure.
 
-**Data** (CDAAC, one day per mission, in this repo):
+The L1 minus L2 phase also gives the ionosphere electron density (slant TEC, then an Abel inversion).
 
-| Folder | Content |
-| --- | --- |
-| `data` | COSMIC-1 `atmPhs` and `atmPrf`, 2010/001 |
-| `data_cosmic2` | COSMIC-2 `conPhs` and `atmPrf`, 2024/001 |
-| `data_iono` | COSMIC-1 `ionPhs` and `ionPrf`, 2010/001 |
-| `data_geoid` | EGM96 geoid grid |
+**Accuracy:** For the 4 COSMIC-1 and 8 COSMIC-2 test profiles, the median difference from CDAAC is within about 0.1% for refractivity (5-30 km) and within a few tenths of a K for temperature (5-20 km). Below 5 km the worst profile is about 5% off, and above 30 km temperature can be 5-7 K off. The electron density peak height is within 5 km for all 8 ionosphere profiles. This is a small sample from a single day per mission.
 
-**Results against CDAAC**:
+**Limitations:** This is a simplified version of the CDAAC method. It has only been tested on COSMIC data, there is no CTS-SAT data yet, and a reader for the CTS-SAT receiver logs still has to be written. The ionosphere part needs L1 and L2, so it works for CTS-SAT-2 but not for the L1-only CTS-SAT-1. Heights are above the EGM96 geoid (sea level).
 
-- Refractivity within about 0.1 % from 5 to 30 km, dry temperature within a few tenths of a K up to 20 km.
-- Noisier below 5 km (worst profile about -5 %) and above 30 km (temperature up to 5-7 K off).
-- Electron density peak height within 5 km for all 8 profiles.
-
-**Not done:** error estimate (local spectral width), boundary layer and sporadic E scalars, 2020 updates 3, 4, 8, 9, 11 and 12.
-
-**Limits:** only COSMIC data was tested, there is no CTS-SAT data yet and a reader for the CTS-SAT receiver logs still has to be written. The ionosphere part needs L1 and L2: CTS-SAT-2 (OEM7720) has both, CTS-SAT-1 (OEM719) has L1 only. One global climatology is used as first guess, so QC test 3 can fail by mistake at high latitude.
-
-## Setup and checks
-
-Needs [uv](https://docs.astral.sh/uv/).
-
-```powershell
-uv sync                              # install from uv.lock
-uv run python radio_occultation.py   # takes about 4 minutes, saves the plots next to the script
-uv run ruff format --check .         # checks, run these before pushing
-uv run ruff check .
-uv run pyright
-```
+Method: "Standard RO Inversions in the Neutral Atmosphere" (Sokolovskiy, UCAR/CDAAC).
